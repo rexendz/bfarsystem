@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e5522577-f47d-4815-b99a-3ea720c9779f">
+	<property name="ireport.zoom" value="1.464100000000031"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Title" forecolor="#FFFFFF" fontName="Times New Roman" fontSize="50" isBold="false" pdfFontName="Times-Bold"/>
+	<style name="SubTitle" forecolor="#CCCCCC" fontName="Times New Roman" fontSize="18" isBold="false" pdfFontName="Times-Roman"/>
+	<style name="Column header" forecolor="#666666" fontName="Times New Roman" fontSize="14" isBold="true" pdfFontName="Times-Roman"/>
+	<style name="Detail" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman"/>
+	<style name="Row" mode="Transparent" fontName="Times New Roman" pdfFontName="Times-Roman">
+		<conditionalStyle>
+			<conditionExpression><![CDATA[$V{REPORT_COUNT}%2 == 0]]></conditionExpression>
+			<style mode="Opaque" backcolor="#F0EFEF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\guess\\Documents\\NetBeansProjects\\WaterQualityAnalyzer\\WaterQualityAnalyzer\\src\\main\\resources\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="month" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[02]]></defaultValueExpression>
+	</parameter>
+	<parameter name="year" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[2020]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM fishpond_operator WHERE operator_num = 2]]>
+	</queryString>
+	<field name="operator_num" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fla_num" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="firstname" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="middlename" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="lastname" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="fishpond_size" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="street" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="barangay" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="city" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="issuance_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="expiration_date" class="java.sql.Date">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="last_updated" class="java.sql.Timestamp">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="province" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="region" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="sim_number" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="132" splitType="Stretch">
+			<staticText>
+				<reportElement style="Column header" x="2" y="28" width="108" height="18" forecolor="#000000" uuid="8865b101-6782-4c15-a5e5-28a8a948ad7e"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Operator Number: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="110" y="28" width="130" height="17" uuid="f0ec3165-ddd2-4393-ad0a-de0aa3103a8a"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{operator_num}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="265" y="27" width="79" height="18" forecolor="#000000" uuid="31932bb7-e909-4218-b0c0-0a85bd1a95fb"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FLA Number: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="344" y="28" width="133" height="17" uuid="59f2cf46-b06f-4755-a09d-b138f4fe086c"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fla_num}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="2" y="46" width="42" height="18" forecolor="#000000" uuid="afa1650e-95f2-4881-8178-aebe556d18bb"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="44" y="46" width="404" height="18" uuid="a1f5f2e9-b321-48c4-bd99-7fdbb8572c77"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{firstname}+ " "+$F{middlename}+" "+$F{lastname}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="2" y="84" width="89" height="19" forecolor="#000000" uuid="f6655584-c2ce-455d-8f3c-be80ebdd2da9"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fishpond Size:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="90" y="84" width="169" height="18" uuid="0c08f825-6ba9-4eff-94d8-8f182b5e8a11"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fishpond_size}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="2" y="65" width="119" height="18" forecolor="#000000" uuid="d1fa390b-4c33-4d88-a035-b14634bcdfda"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fishpond Address:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="121" y="65" width="424" height="18" uuid="53cb46a2-b8d5-4461-9c5a-f9723e3242d9"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{street}+", "+$F{barangay}+", Kabasalan"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="2" y="103" width="88" height="18" forecolor="#000000" uuid="70933599-770f-4796-b034-748dccd96293"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Issuance Date: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="Column header" x="266" y="103" width="96" height="18" forecolor="#000000" uuid="76615116-8715-45d1-aa4a-920e61c3ad2b"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Expiration Date:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="91" y="103" width="172" height="18" uuid="c7820c5b-c7f9-48f1-80e8-7ee0dc74787d"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{issuance_date}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="362" y="103" width="189" height="18" uuid="9abd13da-e697-4195-b902-04548b3bf472"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expiration_date}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="Column header" x="267" y="83" width="89" height="19" forecolor="#000000" uuid="2dc8b59b-cc24-4451-b65a-3d4cc365cad8"/>
+				<textElement>
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sim number: ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement style="Detail" positionType="Float" x="356" y="84" width="192" height="18" uuid="71b22cc9-71b9-44d8-be9d-16f38f5e0c67"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sim_number}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="27" width="555" height="1" uuid="4ac2af70-0f12-40ae-a1f2-9fb99b24c759"/>
+			</line>
+			<line>
+				<reportElement x="1" y="121" width="555" height="1" uuid="7b284952-6570-4087-a43b-d3e8570bc5fd"/>
+			</line>
+			<line>
+				<reportElement x="0" y="27" width="1" height="95" uuid="6c741228-cae4-4597-aef3-d021a2009c6f"/>
+			</line>
+			<line>
+				<reportElement x="555" y="27" width="1" height="95" uuid="afae087a-5669-4dc3-9ebf-c1a302513f72"/>
+			</line>
+			<line>
+				<reportElement x="1" y="45" width="555" height="1" uuid="cdb9aad0-0f56-4bdb-942c-8e3a383e5c05"/>
+			</line>
+			<line>
+				<reportElement x="0" y="64" width="555" height="1" uuid="8bccbfb0-e6bd-49e0-b48d-16450cf3a415"/>
+			</line>
+			<line>
+				<reportElement x="0" y="83" width="555" height="1" uuid="acb3b051-6e1f-46d7-8f13-72058e41fe35"/>
+			</line>
+			<line>
+				<reportElement x="0" y="102" width="555" height="1" uuid="bcb0f107-0b19-4232-a576-704544286a99"/>
+			</line>
+			<line>
+				<reportElement x="263" y="28" width="1" height="18" uuid="f39927b5-eb66-4872-bb40-6dac75653095"/>
+			</line>
+			<line>
+				<reportElement x="264" y="103" width="1" height="19" uuid="c4c92a7a-d5d0-4bd4-9b8f-efbbafc925a7"/>
+			</line>
+			<line>
+				<reportElement x="264" y="84" width="1" height="18" uuid="59852a3e-bcbc-4cd5-8957-5463a715bc99"/>
+			</line>
+			<textField>
+				<reportElement x="146" y="0" width="262" height="20" uuid="ee7ca569-b7be-4b98-b777-0f15f4cc058f"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14" isBold="false" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Report for: " + $P{year}.toString()+ " - " +$P{month}.toString()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<pageFooter>
+		<band height="25" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="24" forecolor="#D0B48E" backcolor="#666666" uuid="7c7cefb6-bd48-48a1-a60c-969c63ada038"/>
+				<textField evaluationTime="Report">
+					<reportElement style="Column header" x="513" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="49dea13e-ad56-44bc-8e2f-26d51239020a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement style="Column header" x="433" y="0" width="80" height="20" forecolor="#FFFFFF" uuid="1a31b870-6677-414f-81f6-e32e80160f91"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+				</textField>
+				<textField pattern="EEEEE dd MMMMM yyyy">
+					<reportElement style="Column header" x="2" y="1" width="197" height="20" forecolor="#FFFFFF" uuid="21b8bcff-eeb6-424b-92f9-be2721405c94"/>
+					<textElement verticalAlignment="Middle">
+						<font size="10" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="104" splitType="Stretch">
+			<subreport>
+				<reportElement x="1" y="37" width="554" height="67" uuid="716b76fb-3333-4d3a-9610-c4befed65483"/>
+				<subreportParameter name="operator_num">
+					<subreportParameterExpression><![CDATA[$F{operator_num}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="month">
+					<subreportParameterExpression><![CDATA[$P{month}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="year">
+					<subreportParameterExpression><![CDATA[$P{year}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "report_subreport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>
