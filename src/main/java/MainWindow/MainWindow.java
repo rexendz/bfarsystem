@@ -13,6 +13,7 @@ import Panels.MainPanel.MainPageListener;
 import Panels.SignupPanel;
 import Panels.SignupPanel.SignupPageListener;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.UIManager;
 
@@ -32,10 +33,14 @@ public class MainWindow extends javax.swing.JFrame implements LoginPageListener,
     
      
     public MainWindow() {
+        setMinimumSize(new Dimension(800, 600));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/Icon.png")));
         initComponents();
-        this.setExtendedState(MAXIMIZED_BOTH);
+        
         displayLoginPage();
-        //setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png")));
+        setExtendedState(MAXIMIZED_BOTH);
+        pack();
+        setLocationRelativeTo(null);
         
     }
     
@@ -68,43 +73,18 @@ public class MainWindow extends javax.swing.JFrame implements LoginPageListener,
     private void initComponents() {
 
         panel_body = new javax.swing.JScrollPane();
-        menubar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        menuItem_reports = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Title Here");
+        setTitle("BFAR System");
 
         panel_body.setBorder(null);
         panel_body.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel_body.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         getContentPane().add(panel_body, java.awt.BorderLayout.CENTER);
-
-        jMenu1.setText("File");
-
-        menuItem_reports.setText("Reporting");
-        menuItem_reports.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuItem_reportsActionPerformed(evt);
-            }
-        });
-        jMenu1.add(menuItem_reports);
-
-        menubar.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        menubar.add(jMenu2);
-
-        setJMenuBar(menubar);
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void menuItem_reportsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItem_reportsActionPerformed
-        // TODO add your handling code here:
-        
-    }//GEN-LAST:event_menuItem_reportsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -112,10 +92,6 @@ public class MainWindow extends javax.swing.JFrame implements LoginPageListener,
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuItem menuItem_reports;
-    private javax.swing.JMenuBar menubar;
     private javax.swing.JScrollPane panel_body;
     // End of variables declaration//GEN-END:variables
 

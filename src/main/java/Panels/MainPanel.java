@@ -77,7 +77,7 @@ public class MainPanel extends javax.swing.JPanel implements OperatorRegistratio
         pnl_west.applyComponentOrientation(co);
         pnl_west.revalidate();
         pnl_west.repaint();
-        
+
         operatorListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot ds) {
@@ -92,7 +92,6 @@ public class MainPanel extends javax.swing.JPanel implements OperatorRegistratio
 
         };
 
-        retrieveOperatorsThenPopulate();
         operatorRef = FirebaseDatabase.getInstance().getReference().child("operator");
         operatorRef.addValueEventListener(operatorListener);
     }
@@ -121,14 +120,17 @@ public class MainPanel extends javax.swing.JPanel implements OperatorRegistratio
 
     private void retrieveOperatorsThenPopulate() {
         operatorList = new ArrayList<>();
+        operatorList.clear();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("operator");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                for (DataSnapshot snap : snapshot.getChildren()) {
-                    operatorList.add(snap.getValue(FishpondOperator.class));
+                if (operatorList.isEmpty()) {
+                    for (DataSnapshot snap : snapshot.getChildren()) {
+                        operatorList.add(snap.getValue(FishpondOperator.class));
+                    }
+                    filterOperators();
                 }
-                filterOperators();
             }
 
             @Override
@@ -300,7 +302,6 @@ public class MainPanel extends javax.swing.JPanel implements OperatorRegistratio
     @Override
     public void onRegistered() {
         panel_content.setViewportView(null);
-        retrieveOperatorsThenPopulate();
     }
 
     @Override

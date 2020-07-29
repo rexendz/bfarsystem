@@ -83,7 +83,6 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="btn_monthlyReport" alignment="1" max="32767" attributes="0"/>
                               <Component id="btn_edit" pref="231" max="32767" attributes="0"/>
                               <Component id="btn_delete" max="32767" attributes="0"/>
                           </Group>
@@ -108,9 +107,7 @@
                   <Component id="btn_edit" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                   <Component id="btn_delete" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Component id="btn_monthlyReport" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -451,14 +448,6 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_deleteActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="btn_monthlyReport">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="monthly report"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_monthlyReportActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

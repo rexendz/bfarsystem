@@ -5,13 +5,17 @@
  */
 package Main;
 
+import Entities.MyToast;
 import MainWindow.MainWindow;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import javax.swing.UIManager;
 
 /**
@@ -52,9 +56,12 @@ public class Main {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            FileInputStream serviceAccount;
+            InputStream serviceAccount;
+            ClassLoader classLoader = getClass().getClassLoader();
+            
+      
             try {
-                serviceAccount = new FileInputStream(serviceAccountDir);
+                serviceAccount = classLoader.getResourceAsStream(serviceAccountDir);
 
                 FirebaseOptions options = new FirebaseOptions.Builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -64,6 +71,7 @@ public class Main {
                 FirebaseApp.initializeApp(options);
             } catch (IOException e) {
                 System.out.println("There seems to be an error...");
+                MyToast.errorMessage("Error Connecting to Database");
             }
             new MainWindow().setVisible(true);
         });

@@ -10,6 +10,7 @@ import Entities.DatePicker;
 import Entities.FishpondOperator;
 import Entities.MyKeyListener;
 import Entities.MyToast;
+import Entities.OnGetDataListener;
 import Entities.RequiredFields;
 import Entities.WindowUtils;
 import com.google.firebase.database.DataSnapshot;
@@ -66,7 +67,6 @@ public class OperatorRegistration extends javax.swing.JDialog {
 
     public void showProfile(FishpondOperator operator) {
         this.originalProfile = operator;
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         field_flanumber.setText(Long.toString(operator.getFla_number()));
         field_operatorsim.setText(operator.getSim1().substring(3));
         field_transmittersim.setText(operator.getSim2().substring(3));
@@ -74,10 +74,8 @@ public class OperatorRegistration extends javax.swing.JDialog {
         field_mname.setText(operator.getMiddlename());
         field_lname.setText(operator.getLastname());
         field_fsize.setText(operator.getFishpond_size());
-        field_issuancedate.setText(simpleDateFormat.format(operator.getIssuance_date()));
-        field_expirydate.setText(simpleDateFormat.format(operator.getExpiration_date()));
-        field_barangay.setText(operator.getBarangay());
-        cbox_cityprovince.setSelectedItem(operator.getCityProvince().toString());
+        field_issuancedate.setText(operator.getIssuance_date());
+        field_expirydate.setText(operator.getExpiration_date());
     }
 
     public void setEditMode(boolean editMode) {
@@ -117,14 +115,44 @@ public class OperatorRegistration extends javax.swing.JDialog {
             operator.setCityProvince(cbox_cityprovince.getSelectedItem().toString());
 
             final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("operator");
-            ref.orderByChild("fla_number").equalTo(Long.parseLong(field_flanumber.getText())).addListenerForSingleValueEvent(new ValueEventListener() {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot ds) {
-                    if (!field_flanumber.getText().isEmpty()) {
-                        if (ds.exists()) {
-                            MyToast.errorMessage("FLA Number Already Taken");
+                    boolean flaTaken = false;
+                    boolean sim1Taken = false;
+                    boolean sim2Taken = false;
+                    String key = null;
+                    for (DataSnapshot snap : ds.getChildren()) {
+                        if (operator.getFla_number() == snap.getValue(FishpondOperator.class).getFla_number()) {
+                            flaTaken = true;
+                            key = snap.getKey();
+                        }
+                        if (operator.getSim1().equals(snap.getValue(FishpondOperator.class).getSim1())) {
+                            sim1Taken = true;
+                            key = snap.getKey();
+                        }
+                        if (operator.getSim2().equals(snap.getValue(FishpondOperator.class).getSim2())) {
+                            sim2Taken = true;
+                            key = snap.getKey();
+                        }
+                    }
+                    if (!editMode) {
+                        if (flaTaken) {
+                            MyToast.errorMessage("FLA Number Already Taken!");
+                        } else if (sim1Taken) {
+                            MyToast.errorMessage("Sim 1 Number Already Taken!");
+                        } else if (sim2Taken) {
+                            MyToast.errorMessage("Sim 2 Number Already Taken!");
                         } else {
-                            field_flanumber.setText("");
+                            String id = ref.push().getKey();
+                            ref.child(id).setValue(operator, null);
+                            MyToast.victoryMessage("Profile Successfully Saved");
+                            myListener.onRegistered();
+                            myPanel.dispose();
+                        }
+                    } else {
+                        if(key != null){
+                            ds.child(key).getRef().removeValue(null);
                             String id = ref.push().getKey();
                             ref.child(id).setValue(operator, null);
                             MyToast.victoryMessage("Profile Successfully Saved");
@@ -529,25 +557,21 @@ public class OperatorRegistration extends javax.swing.JDialog {
             cbox_municipality.setEnabled(false);
             cbox_municipality.setSelectedIndex(-1);
             field_barangay.setEnabled(true);
-            field_barangay.setText("");
         }
         if (cbox_cityprovince.getSelectedIndex() == 1) { // Zamboanga Del Norte
             cbox_municipality.setEnabled(true);
             cbox_municipality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Baliguian", "Godod", "Gutalac", "Jose Dalman", "Kalawit", "Katipunan", "La Libertad", "Labason", "Leon B. Postigo", "Liloy", "Manukan", "Mutia", "Piñan", "Polanco", "President Manuel A. Roxas", "Rizal", "Salug", "Sergio Osmeña Sr.", "Siayan", "Sibuco", "Sibutad", "Sindangan", "Siocon", "Sirawai", "Tampilisan"}));
             field_barangay.setEnabled(true);
-            field_barangay.setText("");
         }
         if (cbox_cityprovince.getSelectedIndex() == 2) { // Zamboanga Del Sur
             cbox_municipality.setEnabled(true);
             cbox_municipality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Aurora", "Bayog", "Dimataling", "Dinas", "Dumalinao", "Dumingag", "Guipos", "Josefina", "Kumalarang", "Labangan", "Lakewood", "Lapuyan", "Mahayag", "Margosatubig", "Midsalip", "Molave", "Pagadian", "Pitogo", "Ramon Magsaysay", "San Miguel", "San Pablo", "Sominot", "Tabina", "Tambulig", "Tigbao", "Tukuran", "Vincenzo A. Sagun"}));
             field_barangay.setEnabled(true);
-            field_barangay.setText("");
         }
         if (cbox_cityprovince.getSelectedIndex() == 3) { // Zamboanga Sibugay
             cbox_municipality.setEnabled(true);
             cbox_municipality.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{"Alicia", "Buug", "Diplahan", "Imelda", "Ipil", "Kabasalan", "Mabuhay", "Malangas", "Naga", "Olutanga", "Payao", "Roseller Lim", "Siay", "Talusan", "Titay", "Tungawan"}));
             field_barangay.setEnabled(true);
-            field_barangay.setText("");
         }
     }//GEN-LAST:event_cbox_cityprovinceActionPerformed
 
@@ -564,16 +588,16 @@ public class OperatorRegistration extends javax.swing.JDialog {
     }//GEN-LAST:event_field_operatorsimActionPerformed
 
     private void field_operatorsimKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_field_operatorsimKeyTyped
-        
+
         char enter = evt.getKeyChar();
-        if(!Character.isDigit(enter) || field_operatorsim.getText().length()>=10){
+        if (!Character.isDigit(enter) || field_operatorsim.getText().length() >= 10) {
             evt.consume();
         }
     }//GEN-LAST:event_field_operatorsimKeyTyped
 
     private void field_transmittersimKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_field_transmittersimKeyTyped
         char enter = evt.getKeyChar();
-        if(!Character.isDigit(enter) || field_transmittersim.getText().length()>=10){
+        if (!Character.isDigit(enter) || field_transmittersim.getText().length() >= 10) {
             evt.consume();
         }
     }//GEN-LAST:event_field_transmittersimKeyTyped

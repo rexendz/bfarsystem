@@ -43,9 +43,9 @@ public class LoginPanel extends javax.swing.JPanel {
     private Frame MainView;
 
     public LoginPanel(Frame MainView) {
-
         initComponents();
         this.MainView = MainView;
+        
     }
 
     public void addPageListener(LoginPageListener myListener) {
@@ -168,7 +168,6 @@ public class LoginPanel extends javax.swing.JPanel {
 
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/login.png"))); // NOI18N
         jLabel2.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jLabel2.setMinimumSize(new java.awt.Dimension(0, 0));
         jLabel2.setPreferredSize(new java.awt.Dimension(1360, 788));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -292,7 +291,7 @@ public class LoginPanel extends javax.swing.JPanel {
         jLayeredPane1Layout.setHorizontalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jLayeredPane1Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 1155, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 1155, Short.MAX_VALUE)
                 .addGap(0, 0, 0))
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jLayeredPane1Layout.createSequentialGroup()
@@ -302,7 +301,7 @@ public class LoginPanel extends javax.swing.JPanel {
         );
         jLayeredPane1Layout.setVerticalGroup(
             jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 860, Short.MAX_VALUE)
+            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 860, Short.MAX_VALUE)
             .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jLayeredPane1Layout.createSequentialGroup()
                     .addContainerGap(185, Short.MAX_VALUE)

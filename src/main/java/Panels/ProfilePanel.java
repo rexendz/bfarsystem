@@ -5,7 +5,6 @@
  */
 package Panels;
 
-import DialogForms.MonthlyReport;
 import DialogForms.OperatorRegistration;
 import DialogForms.OperatorRegistration.OperatorRegistrationListener;
 import Entities.DatabaseUtil;
@@ -143,7 +142,7 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     private void editProfile() {
         OperatorRegistration or = new OperatorRegistration(MainView, true);
         or.setEditMode(true);
-        or.showProfile(operator);
+        or.showProfile(this.operator);
         or.addListener(this);
         or.setVisible(true);
     }
@@ -210,7 +209,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         text_status = new javax.swing.JLabel();
         btn_edit = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
-        btn_monthlyReport = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
         btn_close = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -406,13 +404,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
             }
         });
 
-        btn_monthlyReport.setText("monthly report");
-        btn_monthlyReport.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_monthlyReportActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -431,7 +422,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btn_monthlyReport, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btn_edit, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
                             .addComponent(btn_delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
@@ -451,9 +441,7 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
                 .addComponent(btn_edit)
                 .addGap(13, 13, 13)
                 .addComponent(btn_delete)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btn_monthlyReport)
-                .addContainerGap())
+                .addGap(45, 45, 45))
         );
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
@@ -530,12 +518,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         myListener.onCloseClicked();
     }//GEN-LAST:event_btn_closeActionPerformed
 
-    private void btn_monthlyReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_monthlyReportActionPerformed
-        // TODO add your handling code here:
-        MonthlyReport mr = new MonthlyReport(MainView, false);
-        mr.setVisible(true);
-    }//GEN-LAST:event_btn_monthlyReportActionPerformed
-
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         // TODO add your handling code here:
         deleteProfile();
@@ -551,7 +533,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     private javax.swing.JButton btn_close;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
-    private javax.swing.JButton btn_monthlyReport;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
