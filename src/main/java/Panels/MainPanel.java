@@ -236,6 +236,10 @@ public class MainPanel extends javax.swing.JPanel implements OperatorRegistratio
 
         labCnst.gridx = 0;
         labCnst.gridy = 3;
+        JLabel commentLabel = createLabel("Comments: " + operator.getComment());
+        card.add(commentLabel, labCnst);
+        labCnst.gridx = 0;
+        labCnst.gridy = 4;
         labCnst.fill = GridBagConstraints.NONE;
         labCnst.anchor = GridBagConstraints.CENTER;
 
