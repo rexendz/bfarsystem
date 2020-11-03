@@ -5,6 +5,7 @@
  */
 package DialogForms;
 
+import Entities.Account;
 import Entities.DatabaseUtil;
 import Entities.DatePicker;
 import Entities.FishpondOperator;
@@ -13,11 +14,13 @@ import Entities.MyToast;
 import Entities.OnGetDataListener;
 import Entities.RequiredFields;
 import Entities.WindowUtils;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.DatabaseReference.CompletionListener;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import java.awt.Frame;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +28,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
@@ -232,6 +236,16 @@ public class OperatorRegistration extends javax.swing.JDialog {
 
         field_flanumber.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         field_flanumber.setForeground(new java.awt.Color(51, 51, 51));
+        field_flanumber.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                field_flanumberFocusLost(evt);
+            }
+        });
+        field_flanumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                field_flanumberActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(51, 51, 51));
@@ -601,6 +615,52 @@ public class OperatorRegistration extends javax.swing.JDialog {
             evt.consume();
         }
     }//GEN-LAST:event_field_transmittersimKeyTyped
+
+    private void field_flanumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_field_flanumberActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_field_flanumberActionPerformed
+
+    private void field_flanumberFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_field_flanumberFocusLost
+        long flanum = -25565;
+        try{
+            flanum = Long.parseLong(field_flanumber.getText());
+        } catch(NumberFormatException e) {
+        }
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("account");
+        Query query = ref.orderByChild("fla_number").equalTo(flanum);
+        query.addChildEventListener(new ChildEventListener(){
+            @Override
+            public void onChildAdded(DataSnapshot ds, String string) {
+                Account existingAccount = new Account((Map<String, Object>) ds.getValue());
+                field_operatorsim.setText(existingAccount.getSim1().substring(3));
+                field_transmittersim.setText(existingAccount.getSim2().substring(3));
+                field_fname.setText(existingAccount.getFirstname());
+                field_mname.setText(existingAccount.getMiddlename());
+                field_lname.setText(existingAccount.getLastname());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot ds, String string) {
+                
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot ds) {
+                
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot ds, String string) {
+                
+            }
+
+            @Override
+            public void onCancelled(DatabaseError de) {
+                
+            }
+            
+        });
+    }//GEN-LAST:event_field_flanumberFocusLost
 
     /**
      * @param args the command line arguments
