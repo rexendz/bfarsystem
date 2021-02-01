@@ -8,12 +8,14 @@ package Panels;
 import DialogForms.OperatorRegistration;
 import DialogForms.OperatorRegistration.OperatorRegistrationListener;
 import Entities.DatabaseUtil;
+import Entities.FishpondBoxes;
 import Entities.FishpondOperator;
 import Entities.FishpondRecord;
 import Entities.MyToast;
 import Entities.OnGetDataListener;
 import Entities.TimestampToDate;
 import Entities.WindowUtils;
+import static com.google.cloud.Role.editor;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,9 +31,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -44,11 +53,18 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     /**
      * Creates new form ContentPanel
      */
+    private FishpondBoxes boxes;
     private Frame MainView;
     private FishpondOperator operator;
     private ArrayList<FishpondRecord> recordList;
     private ProfilePanelListener myListener;
     private Thread deleteThread;
+    private ProfileListener profileListener;
+
+    public interface ProfileListener {
+
+        void onGetBox(String number);
+    }
 
     public ProfilePanel(Frame MainView, FishpondOperator operator) {
         initComponents();
@@ -56,6 +72,35 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         this.operator = operator;
         setupProfile(operator);
         populateTableComplaintRecords();
+        
+
+        profileListener = new ProfileListener() {
+            @Override
+            public void onGetBox(String number) {
+                recordList = new ArrayList<>();
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("fishpond_record");
+                Query query = ref.orderByChild("sim_number").equalTo(number);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot ds) {
+                        for (DataSnapshot snap : ds.getChildren()) {
+                            recordList.add(snap.getValue(FishpondRecord.class));
+                        }
+                        try {
+                            SwingUtilities.invokeAndWait(() -> populate(recordList));
+                        } catch (InterruptedException | InvocationTargetException ex) {
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError de) {
+
+                    }
+
+                });
+            }
+
+        };
     }
 
     public void addListener(ProfilePanelListener myListener) {
@@ -78,11 +123,10 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         text_flanum.setText(Long.toString(operator.getFla_number()));
         text_opname.setText(operator.getFullName());
         text_fpaddress.setText(operator.getAddress());
-        text_operatorsim.setText(operator.getFishpond_size());
+        text_fpsize.setText(operator.getFishpond_size());
         text_issuancedate.setText(operator.getIssuance_date());
         text_expirationdate.setText(operator.getExpiration_date());
         text_operatorsim.setText(operator.getSim1());
-        text_transmittersim.setText(operator.getSim2());
         text_comment.setText(operator.getComment());
         setSatusActive(operator.isIsActive());
     }
@@ -98,26 +142,45 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     }
 
     public void populateTableComplaintRecords() {
-        recordList = new ArrayList<>();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("fishpond_record");
-        Query query = ref.orderByChild("sim_number").equalTo(operator.getSim2());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("fishpond_box");
+        DatabaseUtil.readDataByKey(Long.toString(operator.getFla_number()), ref, new OnGetDataListener() {
             @Override
-            public void onDataChange(DataSnapshot ds) {
-                for (DataSnapshot snap : ds.getChildren()) {
-                    recordList.add(snap.getValue(FishpondRecord.class));
+            public void dataRetrieved(DataSnapshot dataSnapshot) {
+                boxes = new FishpondBoxes((Map<String, Object>) dataSnapshot.getValue());
+
+                List<String> spinnerArray = new ArrayList<>();
+                for (int i = 0; i < operator.getBoxes(); i++) {
+                    spinnerArray.add(boxes.getBox(i));
                 }
+                String[] comboarray = spinnerArray.toArray(new String[0]);
+                DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(comboarray);
+                
+                for(int i = 0; i < comboarray.length; i++) {
+                    System.out.println(comboarray[i]);
+                }
+                
                 try {
-                    SwingUtilities.invokeAndWait(() -> populate(recordList));
+                    SwingUtilities.invokeAndWait(() -> jComboBox1.setModel(model));
                 } catch (InterruptedException | InvocationTargetException ex) {
                 }
+                profileListener.onGetBox(boxes.getBox1_sim());
+
             }
 
             @Override
-            public void onCancelled(DatabaseError de) {
+            public void dataExists(DataSnapshot dataSnapshot) {
 
             }
 
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
         });
     }
 
@@ -129,10 +192,10 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         Object rowData[] = new Object[5];
         for (FishpondRecord fishpondRecord : sortedRecords) {
             rowData[0] = TimestampToDate.getDate(fishpondRecord.getTimestamp());
-            rowData[1] = Float.toString(fishpondRecord.getPh_level());
-            rowData[2] = Float.toString(fishpondRecord.getSalinity());
-            rowData[3] = Float.toString(fishpondRecord.getTemperature());
-            rowData[4] = Float.toString(fishpondRecord.getDo_level());
+            rowData[1] = String.format(java.util.Locale.US, "%.2f", fishpondRecord.getPh_level());
+            rowData[2] = String.format(java.util.Locale.US, "%.2f", fishpondRecord.getSalinity());
+            rowData[3] = String.format(java.util.Locale.US, "%.2f", fishpondRecord.getTemperatureCelsius());
+            rowData[4] = String.format(java.util.Locale.US, "%.2f", fishpondRecord.getDo_level());
             model.addRow(rowData);
         }
 //        WindowUtils.resizeColumnWidth(records_table);
@@ -152,7 +215,7 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         if (JOptionPane.showConfirmDialog(null, "Are you sure to delete this profile?") == 0) {
             WindowUtils.asyncWaitCursor(MainView);
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("operator");
-            DatabaseUtil.readDataByFLA(this.operator.getFla_number(), ref, new OnGetDataListener(){
+            DatabaseUtil.readDataByFLA(this.operator.getFla_number(), ref, new OnGetDataListener() {
                 @Override
                 public void dataRetrieved(DataSnapshot dataSnapshot) {
                     dataSnapshot.getRef().removeValue(null);
@@ -163,19 +226,19 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
 
                 @Override
                 public void dataExists(DataSnapshot dataSnapshot) {
-                    
+
                 }
 
                 @Override
                 public void onStart() {
-                    
+
                 }
 
                 @Override
                 public void onFailure() {
-                    
+
                 }
-                
+
             });
         }
     }
@@ -205,12 +268,12 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         jLabel5 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         text_fpsize = new javax.swing.JLabel();
-        text_transmittersim = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         text_comment = new javax.swing.JTextArea();
         btn_comment = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
         text_status = new javax.swing.JLabel();
         btn_edit = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
@@ -308,10 +371,6 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
         text_fpsize.setForeground(new java.awt.Color(102, 102, 102));
         text_fpsize.setText("32x32 in");
 
-        text_transmittersim.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        text_transmittersim.setForeground(new java.awt.Color(102, 102, 102));
-        text_transmittersim.setText("32x32 in");
-
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(102, 102, 102));
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -341,10 +400,22 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
             }
         });
 
+        jComboBox1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NO RECORD" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_comment, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,16 +446,12 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
                         .addContainerGap())
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8)
                             .addComponent(text_fpsize)
-                            .addComponent(text_transmittersim)
                             .addComponent(jLabel10)
                             .addComponent(jLabel14))
                         .addGap(0, 0, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_comment, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -404,8 +471,8 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(text_transmittersim)
-                .addGap(16, 16, 16)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(text_fpsize)
@@ -574,7 +641,7 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
 
     private void btn_commentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_commentActionPerformed
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("operator");
-        DatabaseUtil.readDataByFLA(this.operator.getFla_number(), ref, new OnGetDataListener(){
+        DatabaseUtil.readDataByFLA(this.operator.getFla_number(), ref, new OnGetDataListener() {
             @Override
             public void dataRetrieved(DataSnapshot dataSnapshot) {
                 dataSnapshot.getRef().child("comment").setValue(text_comment.getText(), null);
@@ -583,21 +650,26 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
 
             @Override
             public void dataExists(DataSnapshot dataSnapshot) {
-                
+
             }
 
             @Override
             public void onStart() {
-                
+
             }
 
             @Override
             public void onFailure() {
-                
+
             }
-            
+
         });
     }//GEN-LAST:event_btn_commentActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        System.out.println("Selected: " + String.valueOf(jComboBox1.getSelectedItem()));
+        profileListener.onGetBox(String.valueOf(jComboBox1.getSelectedItem()));
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -605,6 +677,7 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     private javax.swing.JButton btn_comment;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -629,6 +702,5 @@ public class ProfilePanel extends javax.swing.JPanel implements OperatorRegistra
     private javax.swing.JLabel text_operatorsim;
     private javax.swing.JTextArea text_opname;
     private javax.swing.JLabel text_status;
-    private javax.swing.JLabel text_transmittersim;
     // End of variables declaration//GEN-END:variables
 }

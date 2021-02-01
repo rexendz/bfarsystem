@@ -13,9 +13,9 @@ public class Account{
     private boolean activated;
     private boolean admin;
     private boolean operator;
+
     private long fla_number;
     private String sim1;
-    private String sim2;
     private String activated_by;
     private String made_admin_by;
     private String removed_admin_by;
@@ -29,7 +29,6 @@ public class Account{
         this.removed_admin_by = "NONE";
         this.fla_number = -25565;
         this.sim1 = "NONE";
-        this.sim2 = "NONE";
         this.deactivated_by = "NONE";
     }
 
@@ -48,7 +47,6 @@ public class Account{
         this.admin = (boolean) data.get("admin");
         this.operator = (boolean) data.get("operator");
         this.sim1 = (String) data.get("sim1");
-        this.sim2 = (String) data.get("sim2");
     }
 
     public boolean isOperator() {
@@ -67,18 +65,9 @@ public class Account{
         this.sim1 = sim1;
     }
 
-    public void setSim2(String sim2) {
-        this.sim2 = sim2;
-    }
-
     public String getSim1() {
         return sim1;
     }
-
-    public String getSim2() {
-        return sim2;
-    }
-
     public void setOperator(boolean operator){
         this.operator = operator;
     }

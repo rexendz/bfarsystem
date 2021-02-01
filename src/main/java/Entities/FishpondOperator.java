@@ -10,6 +10,7 @@ public class FishpondOperator {
     private String middlename;
     private String lastname;
     private long fla_number;
+    private long boxes;
     private String fishpond_size;
     private String cityProvince;
     private String barangay;
@@ -17,9 +18,9 @@ public class FishpondOperator {
     private String issuance_date;
     private String expiration_date;
     private String sim1;
-    private String sim2;
+    private String comment = "None";
     private boolean isActive;
-    private String comment;
+
 
     private FishpondRecord[] fishpondRecords;
 
@@ -29,6 +30,14 @@ public class FishpondOperator {
 
     public FishpondRecord[] getFishpondRecords() {
         return fishpondRecords;
+    }
+
+    public long getBoxes() {
+        return boxes;
+    }
+
+    public void setBoxes(long boxes) {
+        this.boxes = boxes;
     }
 
     public FishpondOperator(Map<String, Object> data){
@@ -42,8 +51,12 @@ public class FishpondOperator {
         this.municipality = (String) data.get("municipality");
         this.issuance_date = (String) data.get("issuance_date");
         this.expiration_date = (String) data.get("expiration_date");
+        try {
+            this.boxes = (long) data.get("boxes");
+        } catch (NullPointerException e) {
+            this.boxes = 1;
+        }
         this.sim1 = (String) data.get("sim1");
-        this.sim2 = (String) data.get("sim2");
         this.isActive = (boolean) data.get("isActive");
         this.comment = (String) data.get("comment");
     }
@@ -67,15 +80,6 @@ public class FishpondOperator {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public String getSim2() {
-        return sim2;
-    }
-
-    public void setSim2(String sim_number) {
-
-        this.sim2 = sim_number;
     }
 
     public boolean isIsActive() {

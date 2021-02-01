@@ -29,6 +29,9 @@ public class FishpondRecord {
     public void setSim_number(String sim_number) {
         this.sim_number = sim_number;
     }
+    
+
+    public float getTemperatureCelsius() { return (temperature - 273.15f);}
 
     public float getPh_level() {
         return ph_level;
