@@ -5,9 +5,11 @@
  */
 package DialogForms;
 
+import DialogForms.FishpondBoxSim.SimWindowListener;
 import Entities.Account;
 import Entities.DatabaseUtil;
 import Entities.DatePicker;
+import Entities.FishpondBoxes;
 import Entities.FishpondOperator;
 import Entities.MyKeyListener;
 import Entities.MyToast;
@@ -40,11 +42,14 @@ import javax.swing.event.ListDataListener;
  *
  * @author guess
  */
-public class OperatorRegistration extends javax.swing.JDialog {
+public class OperatorRegistration extends javax.swing.JDialog implements SimWindowListener {
 
     /**
      * Creates new form OperatorRegistration
      */
+    private long boxCount;
+    private FishpondBoxes fishpondBoxes;
+    private FishpondBoxSim simWindow;
     private OperatorRegistration myPanel = this;
     private Frame MainView;
     private RequiredFields fields;
@@ -73,7 +78,6 @@ public class OperatorRegistration extends javax.swing.JDialog {
         this.originalProfile = operator;
         field_flanumber.setText(Long.toString(operator.getFla_number()));
         field_operatorsim.setText(operator.getSim1().substring(3));
-        field_transmittersim.setText(operator.getSim2().substring(3));
         field_fname.setText(operator.getFirstname());
         field_mname.setText(operator.getMiddlename());
         field_lname.setText(operator.getLastname());
@@ -95,12 +99,17 @@ public class OperatorRegistration extends javax.swing.JDialog {
         if (JOptionPane.showConfirmDialog(null, "Are you sure to save this profile?") != 0) {
             return;
         }
+        if(fishpondBoxes == null) {
+            MyToast.errorMessage("Please fill up boxes sim fields");
+            return;
+        }
 
         if (!fields.isAllFilled()) {
             MyToast.errorMessage("Please fill up all fields");
             return;
         } else {
             FishpondOperator operator = new FishpondOperator();
+            operator.setBoxes(boxCount);
             operator.setFirstname(field_fname.getText());
             operator.setMiddlename(field_mname.getText());
             operator.setLastname(field_lname.getText());
@@ -115,7 +124,6 @@ public class OperatorRegistration extends javax.swing.JDialog {
             operator.setIssuance_date(field_issuancedate.getText());
             operator.setExpiration_date(field_expirydate.getText());
             operator.setSim1("+63" + field_operatorsim.getText());
-            operator.setSim2("+63" + field_transmittersim.getText());
             operator.setCityProvince(cbox_cityprovince.getSelectedItem().toString());
 
             final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("operator");
@@ -124,7 +132,6 @@ public class OperatorRegistration extends javax.swing.JDialog {
                 public void onDataChange(DataSnapshot ds) {
                     boolean flaTaken = false;
                     boolean sim1Taken = false;
-                    boolean sim2Taken = false;
                     String key = null;
                     for (DataSnapshot snap : ds.getChildren()) {
                         if (operator.getFla_number() == snap.getValue(FishpondOperator.class).getFla_number()) {
@@ -135,19 +142,16 @@ public class OperatorRegistration extends javax.swing.JDialog {
                             sim1Taken = true;
                             key = snap.getKey();
                         }
-                        if (operator.getSim2().equals(snap.getValue(FishpondOperator.class).getSim2())) {
-                            sim2Taken = true;
-                            key = snap.getKey();
-                        }
                     }
                     if (!editMode) {
                         if (flaTaken) {
                             MyToast.errorMessage("FLA Number Already Taken!");
                         } else if (sim1Taken) {
                             MyToast.errorMessage("Sim 1 Number Already Taken!");
-                        } else if (sim2Taken) {
-                            MyToast.errorMessage("Sim 2 Number Already Taken!");
                         } else {
+                            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("fishpond_box");
+                            String fla_id = Long.toString(operator.getFla_number());
+                            ref2.child(fla_id).setValue(fishpondBoxes, null);
                             String id = ref.push().getKey();
                             ref.child(id).setValue(operator, null);
                             MyToast.victoryMessage("Profile Successfully Saved");
@@ -155,7 +159,11 @@ public class OperatorRegistration extends javax.swing.JDialog {
                             myPanel.dispose();
                         }
                     } else {
-                        if(key != null){
+                        if (key != null) {
+                            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("fishpond_box");
+                            String fla_id = Long.toString(operator.getFla_number());
+                            ref2.child(fla_id).removeValue(null);
+                            ref2.child(fla_id).setValue(fishpondBoxes, null);
                             ds.child(key).getRef().removeValue(null);
                             String id = ref.push().getKey();
                             ref.child(id).setValue(operator, null);
@@ -173,6 +181,15 @@ public class OperatorRegistration extends javax.swing.JDialog {
 
             });
         }
+    }
+    
+
+    @Override
+    public void onSubmit(FishpondBoxes a, long boxCount) {
+        this.fishpondBoxes = a;
+        this.fishpondBoxes = simWindow.getBoxes();
+        this.boxCount = boxCount;
+        System.out.println(this.fishpondBoxes.getBox1_sim());
     }
 
     public interface OperatorRegistrationListener {
@@ -212,14 +229,13 @@ public class OperatorRegistration extends javax.swing.JDialog {
         jLabel3 = new javax.swing.JLabel();
         field_operatorsim = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        field_transmittersim = new javax.swing.JTextField();
-        jLabel16 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         cbox_cityprovince = new javax.swing.JComboBox<>();
         cbox_municipality = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         field_barangay = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
@@ -342,21 +358,9 @@ public class OperatorRegistration extends javax.swing.JDialog {
         jLabel15.setForeground(new java.awt.Color(51, 51, 51));
         jLabel15.setText("+63");
 
-        field_transmittersim.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
-        field_transmittersim.setForeground(new java.awt.Color(51, 51, 51));
-        field_transmittersim.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                field_transmittersimKeyTyped(evt);
-            }
-        });
-
-        jLabel16.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel16.setText("+63");
-
         jLabel9.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel9.setText("Operator SIM2 (Fishpond)");
+        jLabel9.setText("Fishpond Boxes SIMs");
 
         jLabel10.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(51, 51, 51));
@@ -391,6 +395,15 @@ public class OperatorRegistration extends javax.swing.JDialog {
         field_barangay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 field_barangayActionPerformed(evt);
+            }
+        });
+
+        jButton1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(27, 156, 252));
+        jButton1.setText("Enter Numbers");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -429,12 +442,10 @@ public class OperatorRegistration extends javax.swing.JDialog {
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addComponent(field_operatorsim, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGap(25, 25, 25)
-                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jLabel9)
-                                        .addGroup(jPanel1Layout.createSequentialGroup()
-                                            .addComponent(jLabel16)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(field_transmittersim, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGap(40, 40, 40))
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(field_mname, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -477,19 +488,15 @@ public class OperatorRegistration extends javax.swing.JDialog {
                         .addComponent(field_flanumber, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(11, 11, 11))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(field_transmittersim, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel16)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(field_operatorsim, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel15))))
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(field_operatorsim, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel15)))
                         .addGap(7, 7, 7)))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -609,31 +616,23 @@ public class OperatorRegistration extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_field_operatorsimKeyTyped
 
-    private void field_transmittersimKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_field_transmittersimKeyTyped
-        char enter = evt.getKeyChar();
-        if (!Character.isDigit(enter) || field_transmittersim.getText().length() >= 10) {
-            evt.consume();
-        }
-    }//GEN-LAST:event_field_transmittersimKeyTyped
-
     private void field_flanumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_field_flanumberActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_field_flanumberActionPerformed
 
     private void field_flanumberFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_field_flanumberFocusLost
         long flanum = -25565;
-        try{
+        try {
             flanum = Long.parseLong(field_flanumber.getText());
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
         }
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("account");
         Query query = ref.orderByChild("fla_number").equalTo(flanum);
-        query.addChildEventListener(new ChildEventListener(){
+        query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot ds, String string) {
                 Account existingAccount = new Account((Map<String, Object>) ds.getValue());
                 field_operatorsim.setText(existingAccount.getSim1().substring(3));
-                field_transmittersim.setText(existingAccount.getSim2().substring(3));
                 field_fname.setText(existingAccount.getFirstname());
                 field_mname.setText(existingAccount.getMiddlename());
                 field_lname.setText(existingAccount.getLastname());
@@ -641,26 +640,36 @@ public class OperatorRegistration extends javax.swing.JDialog {
 
             @Override
             public void onChildChanged(DataSnapshot ds, String string) {
-                
+
             }
 
             @Override
             public void onChildRemoved(DataSnapshot ds) {
-                
+
             }
 
             @Override
             public void onChildMoved(DataSnapshot ds, String string) {
-                
+
             }
 
             @Override
             public void onCancelled(DatabaseError de) {
-                
+
             }
-            
+
         });
     }//GEN-LAST:event_field_flanumberFocusLost
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        if (simWindow == null) {
+            simWindow = new FishpondBoxSim(MainView, true);
+            simWindow.addListener(this);
+            simWindow.setVisible(true);
+        } else {
+            simWindow.setVisible(true);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -681,14 +690,13 @@ public class OperatorRegistration extends javax.swing.JDialog {
     private javax.swing.JTextField field_lname;
     private javax.swing.JTextField field_mname;
     private javax.swing.JTextField field_operatorsim;
-    private javax.swing.JTextField field_transmittersim;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
