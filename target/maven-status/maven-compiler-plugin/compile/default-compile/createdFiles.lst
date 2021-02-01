@@ -42,6 +42,7 @@ Panels\ProfilePanel$3.class
 DialogForms\FishpondBoxSim$5.class
 Entities\DatePicker$2.class
 DialogForms\OperatorRegistration$2.class
+Panels\ProfilePanel$1$1.class
 DialogForms\FishpondBoxSim$12.class
 Entities\DatePicker$1.class
 DialogForms\OperatorRegistration$11.class
@@ -88,6 +89,7 @@ DialogForms\AdminDialogForm$6.class
 DialogForms\FishpondBoxSim$1.class
 DialogForms\OperatorRegistration.class
 DialogForms\AdminDialogForm$1.class
+Panels\ProfilePanel$10.class
 Entities\FishpondRecord.class
 Panels\SignupPanel$5.class
 Entities\DatePicker.class
@@ -98,6 +100,7 @@ DialogForms\AdminDialogForm$8.class
 Panels\MainPanel$1.class
 DialogForms\OperatorRegistration$5.class
 Panels\MainPanel$12.class
+Panels\ProfilePanel$ProfileListener.class
 Panels\LoginPanel$4.class
 DialogForms\OperatorRegistration$13.class
 Panels\MainPanel$7.class
